@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import cors from "cors";
 import SheetsRoutes from "./sheets/routes.js";
+import 'dotenv/config.js';
 
 const app = express();
 const PORT = 8080;
