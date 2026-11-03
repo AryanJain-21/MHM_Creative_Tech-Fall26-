@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mobile Health Map | Referral Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand">
+      <img class="logo" src="images/logo.png" alt="Mobile Health Map" />
+      <span class="brand-divider"></span>
+      <span class="brand-title">Referral<br />Dashboard</span>
+    </div>
+    <svg class="profile-icon" viewBox="0 0 24 24" aria-label="Profile">
+      <circle cx="12" cy="12" r="11" fill="#000" />
+      <circle cx="12" cy="12" r="9.2" fill="#fff" />
+      <circle cx="12" cy="9.6" r="3.6" fill="#000" />
+      <path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000" />
+    </svg>
+  </header>
+
+  <main class="dashboard">
+    <section class="dash-left">
+      <h1 class="greeting">Hello, JANE DOE</h1>
+
+      <div class="tiles">
+        <a class="tile tile-crimson" href="new-referral.html">
+          <span class="tile-label">New<br />Referral</span>
+          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10.5" />
+            <path d="M12 6.5v11M6.5 12h11" />
+          </svg>
+        </a>
+
+        <a class="tile tile-teal" href="#">
+          <span class="tile-label">Referral<br />Lookup</span>
+          <svg class="tile-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+            <circle cx="9.5" cy="9.5" r="6.5" />
+            <path d="M14.5 14.5L21 21" />
+          </svg>
+        </a>
+
+        <a class="tile tile-black" href="#">
+          <span class="tile-label">Metrics</span>
+          <svg class="tile-icon" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <path d="M8.6 10.6l6.8-4M8.6 13.4l6.8 4" fill="none" />
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="dash-right">
+      <h2 class="activity-title">Recent Activity</h2>
+      <div class="activity-panel" id="activity-list">
+        <!-- Placeholder cards (new referrals get added above these by main.js) -->
+        <div class="activity-card">
+          <svg class="avatar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#000"/><circle cx="12" cy="12" r="9.2" fill="#fff"/><circle cx="12" cy="9.6" r="3.6" fill="#000"/><path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000"/></svg>
+          <div><div class="activity-name">John Doe</div><div class="activity-info">referral update/status info preview</div></div>
+        </div>
+        <div class="activity-card">
+          <svg class="avatar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#000"/><circle cx="12" cy="12" r="9.2" fill="#fff"/><circle cx="12" cy="9.6" r="3.6" fill="#000"/><path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000"/></svg>
+          <div><div class="activity-name">John Doe</div><div class="activity-info">referral update/status info preview</div></div>
+        </div>
+        <div class="activity-card">
+          <svg class="avatar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#000"/><circle cx="12" cy="12" r="9.2" fill="#fff"/><circle cx="12" cy="9.6" r="3.6" fill="#000"/><path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000"/></svg>
+          <div><div class="activity-name">John Doe</div><div class="activity-info">referral update/status info preview</div></div>
+        </div>
+        <div class="activity-card">
+          <svg class="avatar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#000"/><circle cx="12" cy="12" r="9.2" fill="#fff"/><circle cx="12" cy="9.6" r="3.6" fill="#000"/><path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000"/></svg>
+          <div><div class="activity-name">John Doe</div><div class="activity-info">referral update/status info preview</div></div>
+        </div>
+        <div class="activity-card">
+          <svg class="avatar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#000"/><circle cx="12" cy="12" r="9.2" fill="#fff"/><circle cx="12" cy="9.6" r="3.6" fill="#000"/><path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000"/></svg>
+          <div><div class="activity-name">John Doe</div><div class="activity-info">referral update/status info preview</div></div>
+        </div>
+        <div class="activity-card">
+          <svg class="avatar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#000"/><circle cx="12" cy="12" r="9.2" fill="#fff"/><circle cx="12" cy="9.6" r="3.6" fill="#000"/><path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000"/></svg>
+          <div><div class="activity-name">John Doe</div><div class="activity-info">referral update/status info preview</div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

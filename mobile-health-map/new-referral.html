@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mobile Health Map | Create a New Referral</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,500;0,700;1,400&family=Libre+Franklin:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand">
+      <img class="logo" src="images/logo.png" alt="Mobile Health Map" />
+      <span class="brand-divider"></span>
+      <span class="brand-title">Referral<br />Dashboard</span>
+    </div>
+    <svg class="profile-icon" viewBox="0 0 24 24" aria-label="Profile">
+      <circle cx="12" cy="12" r="11" fill="#000" />
+      <circle cx="12" cy="12" r="9.2" fill="#fff" />
+      <circle cx="12" cy="9.6" r="3.6" fill="#000" />
+      <path d="M4.9 18.4c1.3-3 4-4.4 7.1-4.4s5.8 1.4 7.1 4.4A9.2 9.2 0 0 1 12 21.2a9.2 9.2 0 0 1-7.1-2.8z" fill="#000" />
+    </svg>
+  </header>
+
+  <main class="form-page">
+    <a class="back-btn" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      Back
+    </a>
+
+    <h1 class="form-title">Create a New Referral</h1>
+
+    <form id="referral-form" autocomplete="off">
+
+      <div class="row two">
+        <div class="field"><label for="clientId">Client ID</label><input class="input" type="text" id="clientId" name="clientId" /></div>
+        <div class="field"><label for="dateMade">Date Referral Made</label><input class="input date-input" type="text" id="dateMade" name="dateMade" /></div>
+      </div>
+
+      <div class="row two">
+        <div class="field"><label for="clientName">Client/Patient Name</label><input class="input" type="text" id="clientName" name="clientName" /></div>
+        <div class="field"><label for="language">Client’s Preferred Language</label><input class="input" type="text" id="language" name="language" /></div>
+      </div>
+
+      <div class="panel">
+        <div class="group">
+          <div class="group-title">Type of Referral</div>
+          <label class="radio"><input type="radio" name="referralType" value="Healthcare" /> Healthcare</label>
+          <label class="radio"><input type="radio" name="referralType" value="Social Service" /> Social Service</label>
+          <label class="radio"><input type="radio" name="referralType" value="Other" /> Other</label>
+        </div>
+
+        <div class="row two provider-row">
+          <div class="group">
+            <div class="group-title">Healthcare Provider Type</div>
+            <div class="radio-grid">
+              <label class="radio"><input type="radio" name="hcType" value="Primary Care" /> Primary Care</label>
+              <label class="radio"><input type="radio" name="hcType" value="Ambulance" /> Ambulance</label>
+              <label class="radio"><input type="radio" name="hcType" value="Urgent Care" /> Urgent Care</label>
+              <label class="radio"><input type="radio" name="hcType" value="Specialist" /> Specialist</label>
+              <label class="radio"><input type="radio" name="hcType" value="Emergency Room" /> Emergency Room</label>
+              <label class="radio"><input type="radio" name="hcType" value="Other" /> Other</label>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-title">Social Service Provider Type</div>
+            <div class="radio-grid">
+              <label class="radio"><input type="radio" name="ssType" value="Education" /> Education</label>
+              <label class="radio"><input type="radio" name="ssType" value="Housing" /> Housing</label>
+              <label class="radio"><input type="radio" name="ssType" value="Employment" /> Employment</label>
+              <label class="radio"><input type="radio" name="ssType" value="Violence" /> Violence</label>
+              <label class="radio"><input type="radio" name="ssType" value="Food" /> Food</label>
+              <label class="radio"><input type="radio" name="ssType" value="Other" /> Other</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row two">
+        <div class="field"><label for="orgName">Name of Organization</label><input class="input" type="text" id="orgName" name="orgName" /></div>
+        <div class="field"><label for="reason">Reason for Referral</label><input class="input" type="text" id="reason" name="reason" /></div>
+      </div>
+
+      <div class="panel contact-panel">
+        <div class="row two">
+          <div class="group">
+            <div class="group-title">Client contactable?</div>
+            <label class="radio"><input type="radio" name="contactable" value="Yes" /> Yes</label>
+            <label class="radio"><input type="radio" name="contactable" value="No" /> No</label>
+          </div>
+          <div class="group">
+            <div class="group-title">Preferred Contact Method</div>
+            <label class="radio"><input type="radio" name="contactMethod" value="Phone" /> Phone</label>
+            <label class="radio"><input type="radio" name="contactMethod" value="Email" /> Email</label>
+            <label class="radio"><input type="radio" name="contactMethod" value="Other" /> Other</label>
+          </div>
+        </div>
+
+        <div class="row two contact-inputs">
+          <div class="field"><label for="phone">Client Phone Number</label><input class="input white" type="tel" id="phone" name="phone" /></div>
+          <div class="field right-stack">
+            <label for="email">Client Email Address</label>
+            <input class="input white" type="email" id="email" name="email" />
+            <label for="otherContact" class="spaced">Other Contact Form/Information</label>
+            <input class="input white" type="text" id="otherContact" name="otherContact" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row two van-row">
+        <div class="group">
+          <div class="group-title">Appointment for referral via MHM Van?</div>
+          <label class="radio"><input type="radio" name="van" value="Yes" /> Yes</label>
+          <label class="radio"><input type="radio" name="van" value="No" /> No</label>
+        </div>
+        <div class="field"><label for="apptDate">Date of Appointment</label><input class="input date-input" type="text" id="apptDate" name="apptDate" /></div>
+      </div>
+
+      <div class="submit-wrap">
+        <button type="submit" class="submit-btn">Create Referral</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
