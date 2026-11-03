@@ -3,7 +3,7 @@ import "./dashboard.css";
 import {
   EMPTY_REFERRAL,
   SAMPLE_REFERRALS,
-  formatDate,
+  formatMonth,
   nextClientId,
   referralCategory,
   statusClass,
@@ -160,14 +160,14 @@ function Home({ referrals, onNew, onLookup, onMetrics, onOpen }) {
                   <UserIcon className="activity-avatar" />
                   <span className="activity-text">
                     <span className="activity-name">
-                      {r.patient}
+                      {r.clientId}
                       <span className={"badge " + statusClass(r.status)}>
                         {r.status}
                       </span>
                     </span>
                     <span className="activity-preview">
                       {referralCategory(r)} · {r.organization} ·{" "}
-                      {formatDate(r.date)}
+                      {formatMonth(r.date)}
                     </span>
                   </span>
                 </button>

@@ -11,6 +11,10 @@ import {
   STATUS_HELP,
   YES_NO,
   clearSkippedFields,
+  maskEmail,
+  maskName,
+  maskPhone,
+  maskText,
   needsOtherDescription,
 } from "./referrals";
 
@@ -70,9 +74,18 @@ export default function ReferralForm({ referral, onBack, onSave }) {
   const isNew = referral.id === null;
   const canSave = form.patient.trim() && form.reason.trim();
   const wantsFollowUp = form.okToContact === "Yes";
+  // Existing referrals open with name and contact details masked.
+  const [revealed, setRevealed] = useState(isNew);
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  // Input props for a contact field: masked and read-only until revealed.
+  function sensitive(field, mask) {
+    return revealed
+      ? { value: form[field], onChange: (e) => update(field, e.target.value) }
+      : { value: mask(form[field]), readOnly: true, className: "is-masked" };
   }
 
   function handleSubmit(e) {
@@ -84,9 +97,26 @@ export default function ReferralForm({ referral, onBack, onSave }) {
   return (
     <form className="referral-form" onSubmit={handleSubmit}>
       <PageHeader
-        title={isNew ? "Create a New Referral" : form.patient || "Referral"}
+        title={isNew ? "Create a New Referral" : "Referral " + form.clientId}
         onBack={onBack}
       />
+
+      {!isNew && (
+        <div className="privacy-bar">
+          <span>
+            {revealed
+              ? "Name and contact details are visible."
+              : "Name and contact details are hidden."}
+          </span>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setRevealed((r) => !r)}
+          >
+            {revealed ? "Hide contact details" : "Show contact details"}
+          </button>
+        </div>
+      )}
 
       {!isNew && (
         <div className="form-box">
@@ -126,11 +156,7 @@ export default function ReferralForm({ referral, onBack, onSave }) {
         </label>
         <label className="field">
           <span>Client/Patient Name</span>
-          <input
-            value={form.patient}
-            onChange={(e) => update("patient", e.target.value)}
-            autoFocus={isNew}
-          />
+          <input {...sensitive("patient", maskName)} autoFocus={isNew} />
         </label>
         <label className="field">
           <span>Client's Preferred Language</span>
@@ -222,11 +248,7 @@ export default function ReferralForm({ referral, onBack, onSave }) {
           >
             <label className="field">
               <span>Client Phone Number</span>
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
-              />
+              <input type="tel" {...sensitive("phone", maskPhone)} />
             </label>
             <CheckboxGroup
               legend="Reach them by (select all that apply)"
@@ -240,16 +262,14 @@ export default function ReferralForm({ referral, onBack, onSave }) {
               <span>Client Email Address</span>
               <input
                 type="email"
-                value={form.email}
-                onChange={(e) => update("email", e.target.value)}
+                {...sensitive("email", maskEmail)}
                 disabled={!wantsFollowUp || form.contactMethod !== "Email"}
               />
             </label>
             <label className="field">
               <span>Other Contact Form/Information</span>
               <input
-                value={form.otherContact}
-                onChange={(e) => update("otherContact", e.target.value)}
+                {...sensitive("otherContact", maskText)}
                 disabled={!wantsFollowUp || form.contactMethod !== "Other"}
               />
             </label>

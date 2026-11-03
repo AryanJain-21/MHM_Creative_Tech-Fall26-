@@ -106,14 +106,38 @@ export function todayISO() {
   return new Date(d - offset).toISOString().slice(0, 10);
 }
 
-// Spreadsheet-style date, e.g. 10/30/2026.
-export function formatDate(iso) {
+// Month-level date for list views, e.g. Oct 2026. Exact dates are
+// identifiers under HIPAA, so lists only show the month.
+export function formatMonth(iso) {
   if (!iso) return "";
   return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
-    month: "2-digit",
-    day: "2-digit",
+    month: "short",
     year: "numeric",
   });
+}
+
+// Masks for contact details shown before staff choose to reveal them.
+// This is display-only: real protection has to happen on the server.
+export function maskName(name) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part[0] + "•••")
+    .join(" ");
+}
+
+export function maskPhone(phone) {
+  const digits = phone.replace(/\D/g, "");
+  return digits ? "•••-•••-" + digits.slice(-4) : "";
+}
+
+export function maskEmail(email) {
+  const [user, domain] = email.split("@");
+  return user ? user[0] + "•••" + (domain ? "@" + domain : "") : "";
+}
+
+export function maskText(text) {
+  return text ? "••••••••" : "";
 }
 
 export function statusClass(status) {
@@ -134,22 +158,6 @@ export function referralCategory(r) {
       : "Other";
   if (provider === "Other") return r.otherType || "Other";
   return provider || r.type;
-}
-
-export function contactSummary(r) {
-  if (r.okToContact === "No") return "Do not contact";
-  if (r.okToContact !== "Yes" || !r.contactMethod) return "";
-  if (r.contactMethod === "Phone" && r.phonePreference.length > 0) {
-    return "Phone (" + r.phonePreference.join(", ").toLowerCase() + ")";
-  }
-  return r.contactMethod;
-}
-
-export function appointmentSummary(r) {
-  if (r.appointmentMade === "Yes") {
-    return r.appointmentDate ? formatDate(r.appointmentDate) : "Yes";
-  }
-  return r.appointmentMade;
 }
 
 // `focus` is a funnel step key or a referral type picked on the Metrics page.

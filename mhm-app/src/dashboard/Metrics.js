@@ -1,16 +1,39 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import PageHeader from "./PageHeader";
-import { FUNNEL, REFERRAL_TYPES, percent, referralCategory } from "./referrals";
+import { COLUMNS } from "./ReferralLookup";
+import {
+  FUNNEL,
+  REFERRAL_TYPES,
+  focusLabel,
+  matchesFocus,
+  percent,
+  referralCategory,
+} from "./referrals";
+
+const PREVIEW_COLUMNS = COLUMNS.filter((c) =>
+  [
+    "clientId",
+    "provider",
+    "organization",
+    "date",
+    "appointment",
+    "status",
+  ].includes(c.key),
+);
+
+const PREVIEW_ROWS = 6;
 
 export default function Metrics({ referrals, onBack, onDrillDown }) {
+  const [selected, setSelected] = useState(null);
   const total = referrals.length;
 
-  const funnelCounts = useMemo(
+  const funnel = useMemo(
     () =>
-      Object.fromEntries(
-        FUNNEL.map((s) => [s.key, referrals.filter(s.match).length])
-      ),
-    [referrals]
+      FUNNEL.map((step) => ({
+        ...step,
+        count: referrals.filter(step.match).length,
+      })),
+    [referrals],
   );
 
   // Count per referral type, plus the provider breakdown inside each.
@@ -29,7 +52,22 @@ export default function Metrics({ referrals, onBack, onDrillDown }) {
           providers: Object.entries(c).sort((a, b) => b[1] - a[1]),
         };
       }),
-    [referrals]
+    [referrals],
+  );
+
+  function toggle(key) {
+    setSelected((current) => (current === key ? null : key));
+  }
+
+  const detail = selected && (
+    <MetricDetail
+      key={selected}
+      focus={selected}
+      referrals={referrals}
+      total={total}
+      onClose={() => setSelected(null)}
+      onOpenLookup={() => onDrillDown(selected === "all" ? null : selected)}
+    />
   );
 
   return (
@@ -39,56 +77,147 @@ export default function Metrics({ referrals, onBack, onDrillDown }) {
       <section className="summary" aria-label="Closing the loop">
         <h2 className="summary-heading">Closing the loop</h2>
         <div className="summary-cells">
-          {FUNNEL.map((step) => {
-            const n = funnelCounts[step.key];
-            return (
-              <button
-                key={step.key}
-                className="summary-cell"
-                onClick={() => onDrillDown(step.key === "all" ? null : step.key)}
-              >
-                <span className="summary-label">{step.label}</span>
-                <span className="summary-value">
-                  {n}
-                  {step.key !== "all" && (
-                    <span className="summary-pct">{percent(n, total)}%</span>
-                  )}
-                </span>
-              </button>
-            );
-          })}
+          {funnel.map((step) => (
+            <MetricCell
+              key={step.key}
+              label={step.label}
+              value={
+                step.key === "all"
+                  ? step.count
+                  : percent(step.count, total) + "%"
+              }
+              sub={
+                step.key === "all"
+                  ? "total referrals"
+                  : step.count + " of " + total + " referrals"
+              }
+              barPct={step.key === "all" ? null : percent(step.count, total)}
+              active={selected === step.key}
+              onClick={() => toggle(step.key)}
+            />
+          ))}
         </div>
+        {FUNNEL.some((s) => s.key === selected) && detail}
       </section>
 
       <section className="summary" aria-label="Type of referral">
         <h2 className="summary-heading">Type of referral</h2>
         <div className="summary-cells">
           {types.map(({ type, count, providers }) => (
-            <button
+            <MetricCell
               key={type}
-              className="summary-cell"
-              onClick={() => onDrillDown(type)}
+              label={type}
+              value={percent(count, total) + "%"}
+              sub={count + " of " + total + " referrals"}
+              barPct={percent(count, total)}
+              active={selected === type}
+              onClick={() => toggle(type)}
             >
-              <span className="summary-label">{type}</span>
-              <span className="summary-value">
-                {count}
-                <span className="summary-pct">{percent(count, total)}%</span>
-              </span>
               {/* Spans, not a list: buttons only allow inline content */}
               <span className="summary-providers">
                 {providers.map(([name, n]) => (
                   <span key={name} className="summary-provider">
                     <span>{name}</span>
-                    <span>{n}</span>
+                    <span className="summary-provider-pct">
+                      {percent(n, count)}%
+                    </span>
                   </span>
                 ))}
               </span>
-            </button>
+            </MetricCell>
           ))}
         </div>
+        {REFERRAL_TYPES.includes(selected) && detail}
       </section>
+    </div>
+  );
+}
 
-      <p className="field-help">Select any number to see those referrals.</p>
+function MetricCell({ label, value, sub, barPct, active, onClick, children }) {
+  return (
+    <button
+      className={"summary-cell" + (active ? " is-active" : "")}
+      onClick={onClick}
+      aria-expanded={active}
+    >
+      <span className="summary-label">{label}</span>
+      <span className="summary-value">{value}</span>
+      <span className="summary-sub">{sub}</span>
+      {barPct !== null && (
+        <span className="summary-bar" aria-hidden="true">
+          <span className="summary-bar-fill" style={{ width: barPct + "%" }} />
+        </span>
+      )}
+      {children}
+    </button>
+  );
+}
+
+// Expands under the clicked metric with a preview of the matching referrals.
+function MetricDetail({ focus, referrals, total, onClose, onOpenLookup }) {
+  const ref = useRef(null);
+  const rows = referrals
+    .filter((r) => matchesFocus(r, focus))
+    .sort((a, b) => b.date.localeCompare(a.date));
+  const shown = rows.slice(0, PREVIEW_ROWS);
+
+  useEffect(() => {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, []);
+
+  return (
+    <div className="metric-detail" ref={ref}>
+      <div className="metric-detail-head">
+        <h3>
+          {focusLabel(focus)}
+          <span className="metric-detail-count">
+            {rows.length} referrals · {percent(rows.length, total)}% of all
+          </span>
+        </h3>
+        <button
+          className="icon-btn"
+          onClick={onClose}
+          aria-label="Close details"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="sheet-scroll">
+        <table className="sheet-table metric-preview">
+          <thead>
+            <tr>
+              {PREVIEW_COLUMNS.map((c) => (
+                <th key={c.key} scope="col">
+                  <span className="preview-th">{c.label}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {shown.map((r) => (
+              <tr key={r.id}>
+                {PREVIEW_COLUMNS.map((c) => (
+                  <td key={c.key} className={"col-" + c.key}>
+                    {c.render ? c.render(r) : c.value(r)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="metric-detail-foot">
+        {rows.length > shown.length && (
+          <span className="field-help">
+            Showing {shown.length} of {rows.length}
+          </span>
+        )}
+        <button className="btn btn-secondary" onClick={onOpenLookup}>
+          View all in Referral Lookup →
+        </button>
+      </div>
     </div>
   );
 }
