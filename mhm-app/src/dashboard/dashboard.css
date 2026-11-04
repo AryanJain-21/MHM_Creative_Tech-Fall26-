@@ -17,6 +17,11 @@
   --grid: #e3e7ea;
   --gray-dark: #c4c4c4;
 
+  /* Chart marks: a lighter step of the brand teal. The deep teal is too
+     dark and gray to read as a data color (checked with the dataviz
+     palette validator); it stays for text. */
+  --chart: #2a7fae;
+
   /* Status colors */
   --s-new: #a3142f;
   --s-contacted: #b8741a;
@@ -549,7 +554,6 @@ fieldset:disabled .radio input {
   font-weight: 700;
   line-height: 1.05;
   color: var(--teal);
-  font-variant-numeric: tabular-nums;
 }
 
 .summary-cell.is-active {
@@ -563,10 +567,51 @@ fieldset:disabled .radio input {
   font-variant-numeric: tabular-nums;
 }
 
+/* Time range presets, one row above everything they scope */
+.range-bar {
+  display: inline-flex;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.range-option {
+  padding: 7px 14px;
+  border: none;
+  background: var(--white);
+  font-weight: 500;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.range-option + .range-option {
+  border-left: 1px solid var(--line);
+}
+
+.range-option:hover {
+  background: #f6f6f6;
+}
+
+.mhm .range-option.is-selected {
+  background: var(--teal);
+  color: var(--white);
+  font-weight: 700;
+}
+
+.privacy-note {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--yellow);
+  background: #fdf6e1;
+  border-radius: 4px;
+  font-size: 0.92rem;
+}
+
 .summary-bar {
   display: block;
   height: 6px;
-  margin-top: 6px;
+  margin-top: 8px;
   border-radius: 999px;
   background: var(--grid);
   overflow: hidden;
@@ -576,8 +621,137 @@ fieldset:disabled .radio input {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--teal);
+  background: var(--chart);
   transition: width 0.4s ease;
+}
+
+/* Hidden ("<5") value: striped, so no bar length gives the count away */
+.summary-bar-fill.is-hidden {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--line) 0 4px,
+    var(--grid) 4px 8px
+  );
+}
+
+.delta {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 1.3em;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.delta.is-up { color: var(--s-completed); }
+.delta.is-down { color: var(--s-new); }
+
+.delta-arrow {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.delta-vs {
+  margin-left: 2px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.mhm .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Type of referral donut */
+.type-chart {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.donut {
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+}
+
+.donut-slice {
+  stroke: var(--white);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: opacity 0.12s ease;
+}
+
+.donut-slice.is-static {
+  cursor: default;
+}
+
+.donut-slice:focus {
+  outline: none;
+}
+
+.donut-slice:focus-visible {
+  outline: none;
+  stroke: var(--ink);
+}
+
+/* Fade the others so the hovered or selected slice stands out */
+.donut:has(.donut-slice.is-hover) .donut-slice:not(.is-hover) {
+  opacity: 0.45;
+}
+
+.donut-value {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+.donut-label {
+  font-size: 12px;
+  fill: var(--muted);
+}
+
+.donut-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.donut-legend li {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.donut-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.donut-legend-pct {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .summary-provider-pct {
@@ -664,7 +838,7 @@ fieldset:disabled .radio input {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 2px 0;
+  padding: 3px 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -926,6 +1100,7 @@ th[aria-sort="descending"] .sort-btn {
   .activity-title { text-align: left; }
   .form-grid { grid-template-columns: 1fr; column-gap: 0; }
 }
+
 
 @media (max-width: 600px) {
   .mhm-header { padding: 10px 16px; }

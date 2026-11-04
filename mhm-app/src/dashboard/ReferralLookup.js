@@ -4,6 +4,7 @@ import {
   REFERRAL_TYPES,
   STATUSES,
   YES_NO,
+  daysAgoISO,
   formatMonth,
   referralCategory,
   statusClass,
@@ -11,7 +12,11 @@ import {
 
 const ANY = "All";
 
+// Date windows shared with the Metrics time range.
+export const DATE_WINDOWS = { "Last 30 days": 30, "Last 90 days": 90 };
+
 const NO_FILTERS = {
+  referred: ANY,
   type: ANY,
   provider: ANY,
   followUp: ANY,
@@ -21,6 +26,12 @@ const NO_FILTERS = {
 
 // Toolbar filters. Each active one also shows as a removable chip.
 const FILTERS = [
+  {
+    key: "referred",
+    label: "Referred",
+    options: () => Object.keys(DATE_WINDOWS),
+    match: (r, v) => r.date > daysAgoISO(DATE_WINDOWS[v]),
+  },
   {
     key: "type",
     label: "Type",
@@ -61,12 +72,15 @@ const FILTERS = [
   },
 ];
 
-// Metrics drill-downs arrive as a focus key; turn it into filter values.
+// Metrics drill-downs arrive as { key, range }: a funnel step or referral
+// type, plus the Metrics time range label. Turn that into filter values.
 function filtersFromFocus(focus) {
-  if (focus === "contact") return { ...NO_FILTERS, followUp: "Yes" };
-  if (focus === "appointment") return { ...NO_FILTERS, appointment: "Yes" };
-  if (REFERRAL_TYPES.includes(focus)) return { ...NO_FILTERS, type: focus };
-  return NO_FILTERS;
+  const { key, range } = focus || {};
+  const filters = { ...NO_FILTERS, referred: range || ANY };
+  if (key === "contact") return { ...filters, followUp: "Yes" };
+  if (key === "appointment") return { ...filters, appointment: "Yes" };
+  if (REFERRAL_TYPES.includes(key)) return { ...filters, type: key };
+  return filters;
 }
 
 // Table columns. `value` is what the column sorts by. Kept de-identified on
