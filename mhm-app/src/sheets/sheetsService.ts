@@ -36,10 +36,15 @@ enum PhoneNumberContactMethod {
   TEXT = "Text",
 }
 
+enum ReferralStatus {
+  CREATED = "Created",
+  COMPLETED = "Completed",
+  CANCELLED = "Cancelled",
+}
 
 const FormResponse = z
   .object({
-    formId: z.string(),
+    formId: z.uuid({ version: "v4" }),
     timestamp: z.string(),
     clientId: z.string().default(""),
     referralDate: z.date(),
@@ -61,9 +66,15 @@ const FormResponse = z
     otherContactInfo: z.string().default(""),
     appointmentMade: z.boolean(),
     appointmentDate: z.date(),
+    referralStatus: z.enum(ReferralStatus),
+    createdDate: z.date(),
+    updatedDate: z.date().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.referralType == ReferralType.OTHER && data.referralOtherMessage === "") {
+    if (
+      data.referralType == ReferralType.OTHER &&
+      data.referralOtherMessage === ""
+    ) {
       ctx.addIssue(
         "Forms with an 'Other' referral type must include text in referralOtherMessage.",
       );
@@ -96,31 +107,63 @@ const FormResponse = z
     }
   });
 
-  const NewFormResponse = FormResponse.omit({
-    "formId": true,
-    "timestamp": true
-  });
+const NewFormResponse = FormResponse.omit({
+  formId: true,
+  timestamp: true,
+}).extend({
+  referralStatus: z.literal(ReferralStatus.CREATED),
+  createdDate: z.date().default(new Date()),
+});
+
+const FormResponseUpdate = FormResponse.exactPartial().required({
+  formId: true,
+});
 
 export default function SheetsService() {
   const url = process.env.SHEET_API_URL as string;
 
   const getAllForms = async () => {
-    const forms: any[] = await axios.get(`${url}/api/sheet`);
+    const res = await axios.get(`${url}/api/sheet`);
+    return res.data;
   };
 
-  const getFormById = async(formId: string) => {
-    const form = await axios.get(`${url}/api/sheet/${formId}`);
-    return form;
-  }
+  const getFormById = async (formId: string) => {
+    const res = await axios.get(`${url}/api/sheet/${formId}`);
+    return res.data;
+  };
 
-  const sendForm = async (form: object) => {
+  const sendNewFormResponse = async (form: object) => {
     const formParseObj = NewFormResponse.safeParse(form);
     if (!formParseObj.success) {
       return { error: "Form validation failed", zodError: formParseObj.error };
     }
     const res = await axios.post(`${url}/api/sheet`, formParseObj.data);
+    return res.data;
+  };
+
+  const updateFormResponse = async (form: object) => {
+    const formUpdateObj = FormResponseUpdate.safeParse(form);
+    if (!formUpdateObj.success) {
+      return {
+        error: "Form update validation failed",
+        zodError: formUpdateObj.error,
+      };
+    }
+    const res = await axios.put(`${url}/api/sheet`, formUpdateObj.data);
     return res;
   };
 
-  return {getAllForms, getFormById, sendForm, FormResponse, NewFormResponse};
+  const deleteFormResponse = async (formId: string) => {
+    const res = await axios.delete(`${url}/api/sheet/${formId}`);
+    return res;
+  };
+
+  return {
+    getAllForms,
+    getFormById,
+    sendNewFormResponse,
+    updateFormResponse,
+    FormResponse,
+    NewFormResponse,
+  };
 }
